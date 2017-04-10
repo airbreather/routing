@@ -40,8 +40,8 @@ namespace Itinero.Graphs.Geometric.Shapes
         /// </summary>
         public ShapesArray(long size)
         {
-            _index = new MemoryArray<ulong>(size);
-            _coordinates = new MemoryArray<float>(size * 2 * ESTIMATED_SIZE);
+            _index = Constants.MemoryArrayFactory.CreateMemoryBackedArray<ulong>(size);
+            _coordinates = Constants.MemoryArrayFactory.CreateMemoryBackedArray<float>(size * 2 * ESTIMATED_SIZE);
 
             for (long i = 0; i < _index.Length; i++)
             {
@@ -382,10 +382,10 @@ namespace Itinero.Graphs.Geometric.Shapes
             ArrayBase<float> coordinates;
             if(copy)
             { // just create arrays and read the data.
-                index = new MemoryArray<ulong>(indexLength);
+                index = Constants.MemoryArrayFactory.CreateMemoryBackedArray<ulong>(indexLength);
                 index.CopyFrom(stream);
                 size += indexLength * 8;
-                coordinates = new MemoryArray<float>(coordinatesLength);
+                coordinates = Constants.MemoryArrayFactory.CreateMemoryBackedArray<float>(coordinatesLength);
                 size += coordinatesLength * 4;
                 coordinates.CopyFrom(stream);
             }

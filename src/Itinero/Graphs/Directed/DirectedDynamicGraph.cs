@@ -59,12 +59,12 @@ namespace Itinero.Graphs.Directed
             if (fixedEdgeDataSize < 1) { throw new ArgumentOutOfRangeException("fixedEdgeDataSize", "Fixed edge data size needs too greater than or equal to 1."); }
             if (sizeEstimate <= 0) { throw new ArgumentOutOfRangeException("sizeEstimate"); }
 
-            _vertices = new MemoryArray<uint>(sizeEstimate);
+            _vertices = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(sizeEstimate);
             for (var i = 0; i < _vertices.Length; i++)
             {
                 _vertices[i] = NO_EDGE;
             }
-            _edges = new MemoryArray<uint>(sizeEstimate * 4);
+            _edges = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(sizeEstimate * 4);
 
             _fixedEdgeDataSize = fixedEdgeDataSize;
             _edgeCount = 0;
@@ -599,7 +599,7 @@ namespace Itinero.Graphs.Directed
             this.Trim();
 
             // build a list of all vertices sorted by their first position.
-            var sortedVertices = new MemoryArray<uint>(_vertices.Length);
+            var sortedVertices = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(_vertices.Length);
             for (uint i = 0; i < sortedVertices.Length; i++)
             {
                 sortedVertices[i] = i;
@@ -1074,10 +1074,10 @@ namespace Itinero.Graphs.Directed
             ArrayBase<uint> edges;
             if (profile == null)
             { // just create arrays and read the data.
-                vertices = new MemoryArray<uint>(vertexLength);
+                vertices = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(vertexLength);
                 vertices.CopyFrom(stream);
                 size += vertexLength * 4;
-                edges = new MemoryArray<uint>(edgeArraySize);
+                edges = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(edgeArraySize);
                 edges.CopyFrom(stream);
                 size += edgeArraySize * 4;
             }

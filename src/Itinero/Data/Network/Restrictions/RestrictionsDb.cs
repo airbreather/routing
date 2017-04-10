@@ -46,13 +46,13 @@ namespace Itinero.Data.Network.Restrictions
         public RestrictionsDb(int hashes = DEFAULT_HASHCOUNT)
         {
             _hasComplexRestrictions = false;
-            _hashes = new MemoryArray<uint>(hashes * 2);
+            _hashes = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(hashes * 2);
             for (var i = 0; i < _hashes.Length; i++)
             {
                 _hashes[i] = NO_DATA;
             }
-            _restrictions = new MemoryArray<uint>(BLOCKSIZE);
-            _index = new MemoryArray<uint>(BLOCKSIZE);
+            _restrictions = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(BLOCKSIZE);
+            _index = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(BLOCKSIZE);
         }
         
         /// <summary>
@@ -520,7 +520,7 @@ namespace Itinero.Data.Network.Restrictions
             ArrayBase<uint> hashes;
             if (profile == null || profile.HashesProfile == null)
             {
-                hashes = new MemoryArray<uint>(hashSize);
+                hashes = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(hashSize);
                 hashes.CopyFrom(stream);
             }
             else
@@ -535,7 +535,7 @@ namespace Itinero.Data.Network.Restrictions
             ArrayBase<uint> index;
             if (profile == null || profile.IndexProfile == null)
             {
-                index = new MemoryArray<uint>(indexSize);
+                index = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(indexSize);
                 index.CopyFrom(stream);
             }
             else
@@ -550,7 +550,7 @@ namespace Itinero.Data.Network.Restrictions
             ArrayBase<uint> restrictions;
             if (profile == null || profile.RestrictionsProfile == null)
             {
-                restrictions = new MemoryArray<uint>(restrictionSize);
+                restrictions = Constants.MemoryArrayFactory.CreateMemoryBackedArray<uint>(restrictionSize);
                 restrictions.CopyFrom(stream);
             }
             else

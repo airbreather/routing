@@ -47,5 +47,7 @@ namespace Itinero
         /// An empty sequence/restriction.
         /// </summary>
         public static uint[] EMPTY_SEQUENCE = new uint[0];
+
+        public static IMemoryArrayFactory MemoryArrayFactory = new DefaultMemoryArrayFactory();
     }
 }

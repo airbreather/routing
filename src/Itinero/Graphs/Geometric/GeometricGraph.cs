@@ -54,7 +54,7 @@ namespace Itinero.Graphs.Geometric
         public GeometricGraph(int edgeDataSize, int size)
         {
             _graph = new Graph(edgeDataSize, size);
-            _coordinates = new MemoryArray<float>(size * 2);
+            _coordinates = Constants.MemoryArrayFactory.CreateMemoryBackedArray<float>(size * 2);
             for (var i = 0; i < _coordinates.Length; i++)
             {
                 _coordinates[i] = NO_COORDINATE;
@@ -650,7 +650,7 @@ namespace Itinero.Graphs.Geometric
             ShapesArray shapes;
             if (profile == null)
             { // don't use the stream, the read from it.
-                coordinates = new MemoryArray<float>(graph.VertexCount * 2);
+                coordinates = Constants.MemoryArrayFactory.CreateMemoryBackedArray<float>(graph.VertexCount * 2);
                 coordinates.CopyFrom(stream);
                 size += graph.VertexCount * 2 * 4;
                 long shapeSize;
