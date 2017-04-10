@@ -811,7 +811,7 @@ namespace Itinero.Graphs.Directed
             /// <summary>
             /// Fills the given array with the dynamic part of the edge-data.
             /// </summary>
-            public int FillWithDynamicData(ref uint[] data)
+            public int FillWithDynamicData(uint[] data)
             {
                 var p = _currentEdgePointer + _graph._fixedEdgeDataSize;
                 if (DirectedDynamicGraph.IsLastField(_graph._edges[p]))
@@ -884,7 +884,7 @@ namespace Itinero.Graphs.Directed
             /// <summary>
             /// Fills the given array with the fixed data.
             /// </summary>
-            public int FillWithData(ref uint[] data)
+            public int FillWithData(uint[] data)
             {
                 for (var i = 0; i < _graph._fixedEdgeDataSize && i < data.Length; i++)
                 {

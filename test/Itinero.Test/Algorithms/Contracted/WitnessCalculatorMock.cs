@@ -43,7 +43,7 @@ namespace Itinero.Test.Algorithms.Contracted
         }
 
         public void Calculate(DirectedGraph graph, uint source, List<uint> targets, List<float> weights, 
-            ref bool[] forwardWitness, ref bool[] backwardWitness, uint vertexToSkip)
+            bool[] forwardWitness, bool[] backwardWitness, uint vertexToSkip)
         {
             if (_witnesses != null)
             {

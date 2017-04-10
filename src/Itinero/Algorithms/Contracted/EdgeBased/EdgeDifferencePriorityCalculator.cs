@@ -147,7 +147,7 @@ namespace Itinero.Algorithms.Contracted.EdgeBased
 
                 // calculate all witness paths.
                 _witnessCalculator.Calculate(_graph, getRestrictions, edge1.Neighbour, targets, targetWeights,
-                    ref forwardWitnesses, ref backwardWitnesses, Constants.NO_VERTEX);
+                    forwardWitnesses, backwardWitnesses, Constants.NO_VERTEX);
 
                 // add contracted edges if needed.
                 for (var k = 0; k < j; k++)

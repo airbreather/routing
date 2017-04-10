@@ -53,7 +53,7 @@ namespace Itinero.Test.Algorithms.Contracted
             var forwardWitnesses = new bool[1];
             var backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 0, new List<uint>(new uint[] { 1 }), new List<float>(new float[] { 200 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(true, forwardWitnesses[0]);
             Assert.AreEqual(true, backwardWitnesses[0]);
 
@@ -61,7 +61,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 0, new List<uint>(new uint[] { 1 }), new List<float>(new float[] { 50 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
 
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
@@ -94,7 +94,7 @@ namespace Itinero.Test.Algorithms.Contracted
             var forwardWitnesses = new bool[1];
             var backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 1000 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(true, forwardWitnesses[0]);
             Assert.AreEqual(true, backwardWitnesses[0]);
 
@@ -102,7 +102,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 50 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
 
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
@@ -141,7 +141,7 @@ namespace Itinero.Test.Algorithms.Contracted
             var forwardWitnesses = new bool[1];
             var backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 1000 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(true, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
 
@@ -149,7 +149,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 50 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
 
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
@@ -180,7 +180,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 2, new List<uint>(new uint[] { 0 }), new List<float>(new float[] { 1000 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(true, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
 
@@ -188,7 +188,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 2, new List<uint>(new uint[] { 0 }), new List<float>(new float[] { 50 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
 
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
@@ -258,7 +258,7 @@ namespace Itinero.Test.Algorithms.Contracted
             var forwardWitnesses = new bool[1];
             var backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 2, new List<uint>(new uint[] { 3 }), new List<float>(new float[] { 110 }),
-                ref forwardWitnesses, ref backwardWitnesses, 0);
+                forwardWitnesses, backwardWitnesses, 0);
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
 
@@ -266,7 +266,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 3, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 110 }),
-                ref forwardWitnesses, ref backwardWitnesses, 0);
+                forwardWitnesses, backwardWitnesses, 0);
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
 
@@ -274,7 +274,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 0, new List<uint>(new uint[] { 1 }), new List<float>(new float[] { 1100 }),
-                ref forwardWitnesses, ref backwardWitnesses, 2);
+                forwardWitnesses, backwardWitnesses, 2);
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
 
@@ -282,7 +282,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 1, new List<uint>(new uint[] { 0 }), new List<float>(new float[] { 1100 }),
-                ref forwardWitnesses, ref backwardWitnesses, 2);
+                forwardWitnesses, backwardWitnesses, 2);
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
 
@@ -290,7 +290,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 3, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 11000 }),
-                ref forwardWitnesses, ref backwardWitnesses, 1);
+                forwardWitnesses, backwardWitnesses, 1);
             Assert.AreEqual(true, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
 
@@ -298,7 +298,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 2, new List<uint>(new uint[] { 3 }), new List<float>(new float[] { 11000 }),
-                ref forwardWitnesses, ref backwardWitnesses, 1);
+                forwardWitnesses, backwardWitnesses, 1);
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(true, backwardWitnesses[0]);
 
@@ -306,7 +306,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 0, new List<uint>(new uint[] { 1 }), new List<float>(new float[] { 10010 }),
-                ref forwardWitnesses, ref backwardWitnesses, 3);
+                forwardWitnesses, backwardWitnesses, 3);
             Assert.AreEqual(true, forwardWitnesses[0]);
             Assert.AreEqual(false, backwardWitnesses[0]);
 
@@ -314,7 +314,7 @@ namespace Itinero.Test.Algorithms.Contracted
             forwardWitnesses = new bool[1];
             backwardWitnesses = new bool[1];
             witnessCalculator.Calculate(graph, 1, new List<uint>(new uint[] { 0 }), new List<float>(new float[] { 10010 }),
-                ref forwardWitnesses, ref backwardWitnesses, 3);
+                forwardWitnesses, backwardWitnesses, 3);
             Assert.AreEqual(false, forwardWitnesses[0]);
             Assert.AreEqual(true, backwardWitnesses[0]);
         }

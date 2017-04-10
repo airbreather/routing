@@ -30,6 +30,6 @@ namespace Itinero.Algorithms.Contracted.Witness
         /// Calculates witnesses.
         /// </summary>
         void Calculate(DirectedGraph graph, uint source, List<uint> targets, List<float> weights,
-            ref bool[] forwardWitness, ref bool[] backwardWitness, uint vertexToSkip);
+            bool[] forwardWitness, bool[] backwardWitness, uint vertexToSkip);
     }
 }

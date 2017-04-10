@@ -48,7 +48,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             var forwardWitnesses = new EdgePath<float>[1];
             var backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 1 }), new List<float>(new float[] { 200 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(1, forwardWitnesses[0].Vertex);
             Assert.AreEqual(1, backwardWitnesses[0].Vertex);
 
@@ -56,7 +56,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 1 }), new List<float>(new float[] { 50 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
         }
@@ -78,7 +78,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             var forwardWitnesses = new EdgePath<float>[1];
             var backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 1000 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(2, forwardWitnesses[0].Vertex);
             Assert.AreEqual(2, backwardWitnesses[0].Vertex);
 
@@ -86,7 +86,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 50 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
         }
@@ -109,7 +109,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             var forwardWitnesses = new EdgePath<float>[1];
             var backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 1000 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(2, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -117,7 +117,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 50 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -131,7 +131,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 2, new List<uint>(new uint[] { 0 }), new List<float>(new float[] { 1000 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(0, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -139,7 +139,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 2, new List<uint>(new uint[] { 0 }), new List<float>(new float[] { 50 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
         }
@@ -168,7 +168,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             var forwardWitnesses = new EdgePath<float>[1];
             var backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 2, new List<uint>(new uint[] { 3 }), new List<float>(new float[] { 110 }),
-                ref forwardWitnesses, ref backwardWitnesses, 0);
+                forwardWitnesses, backwardWitnesses, 0);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -176,7 +176,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 3, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 110 }),
-                ref forwardWitnesses, ref backwardWitnesses, 0);
+                forwardWitnesses, backwardWitnesses, 0);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -184,7 +184,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 1 }), new List<float>(new float[] { 1100 }),
-                ref forwardWitnesses, ref backwardWitnesses, 2);
+                forwardWitnesses, backwardWitnesses, 2);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -192,7 +192,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 1, new List<uint>(new uint[] { 0 }), new List<float>(new float[] { 1100 }),
-                ref forwardWitnesses, ref backwardWitnesses, 2);
+                forwardWitnesses, backwardWitnesses, 2);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -200,7 +200,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 3, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 11000 }),
-                ref forwardWitnesses, ref backwardWitnesses, 1);
+                forwardWitnesses, backwardWitnesses, 1);
             Assert.AreEqual(2, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -208,7 +208,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 2, new List<uint>(new uint[] { 3 }), new List<float>(new float[] { 11000 }),
-                ref forwardWitnesses, ref backwardWitnesses, 1);
+                forwardWitnesses, backwardWitnesses, 1);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(3, backwardWitnesses[0].Vertex);
 
@@ -216,7 +216,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 1 }), new List<float>(new float[] { 10010 }),
-                ref forwardWitnesses, ref backwardWitnesses, 3);
+                forwardWitnesses, backwardWitnesses, 3);
             Assert.AreEqual(1, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -224,7 +224,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 1, new List<uint>(new uint[] { 0 }), new List<float>(new float[] { 10010 }),
-                ref forwardWitnesses, ref backwardWitnesses, 3);
+                forwardWitnesses, backwardWitnesses, 3);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(0, backwardWitnesses[0].Vertex);
         }
@@ -246,7 +246,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             var forwardWitnesses = new EdgePath<float>[1];
             var backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => { return new uint[][] { new uint[] { 0, 1, 2 } }; }, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { 1000 }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(2, backwardWitnesses[0].Vertex);
         }
@@ -273,7 +273,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             var forwardWitnesses = new EdgePath<float>[1];
             var backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { float.MaxValue }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
 
@@ -291,7 +291,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
             forwardWitnesses = new EdgePath<float>[1];
             backwardWitnesses = new EdgePath<float>[1];
             witnessCalculator.Calculate(graph, (i) => null, 0, new List<uint>(new uint[] { 2 }), new List<float>(new float[] { float.MaxValue }),
-                ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+                forwardWitnesses, backwardWitnesses, uint.MaxValue);
             Assert.AreEqual(Constants.NO_VERTEX, forwardWitnesses[0].Vertex);
             Assert.AreEqual(Constants.NO_VERTEX, backwardWitnesses[0].Vertex);
         }

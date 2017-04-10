@@ -221,7 +221,7 @@ namespace Itinero.Algorithms.Contracted.EdgeBased
 
             //    // calculate all witness paths.
             //    _witnessCalculator.Calculate(_graph, _getRestrictions, vertex, targets, weights,
-            //        ref forwardWitnesses, ref backwardWitnesses, uint.MaxValue);
+            //        forwardWitnesses, backwardWitnesses, uint.MaxValue);
 
             //    // check witness paths.
             //    for (var i = 0; i < edges.Count; i++)
@@ -374,8 +374,8 @@ namespace Itinero.Algorithms.Contracted.EdgeBased
                 }
 
                 // calculate all witness paths.
-                _witnessCalculator.Calculate(_graph, _getRestrictions, edge1.Neighbour, targets, targetWeights, ref forwardWitnesses,
-                    ref backwardWitnesses, Constants.NO_VERTEX);
+                _witnessCalculator.Calculate(_graph, _getRestrictions, edge1.Neighbour, targets, targetWeights, forwardWitnesses,
+                    backwardWitnesses, Constants.NO_VERTEX);
 
                 // get all sequences where needed.
                 var s1forward = new uint[forwardWitnesses.Length][];

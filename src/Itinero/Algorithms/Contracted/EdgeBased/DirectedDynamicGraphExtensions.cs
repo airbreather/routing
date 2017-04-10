@@ -210,14 +210,14 @@ namespace Itinero.Algorithms.Contracted.EdgeBased
         /// Gets the sequence at the source.
         /// </summary>
         /// <returns>The number of elements in the array that represent the sequence.</returns>
-        public static int GetSequence1(this DirectedDynamicGraph.EdgeEnumerator edge, ref uint[] sequence1)
+        public static int GetSequence1(this DirectedDynamicGraph.EdgeEnumerator edge, uint[] sequence1)
         {
             if (edge.IsOriginal())
             {
                 return 0;
             }
 
-            var dynamicDataLength = edge.FillWithDynamicData(ref sequence1);
+            var dynamicDataLength = edge.FillWithDynamicData(sequence1);
             //var dynamicData = edge.DynamicData;
             var dynamicData = sequence1;
             if (dynamicDataLength < 1)

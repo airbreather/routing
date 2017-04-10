@@ -63,11 +63,11 @@ namespace Itinero.Algorithms.Contracted.EdgeBased.Witness
         /// Calculates witness paths.
         /// </summary>
         public void Calculate(DirectedDynamicGraph graph, Func<uint, IEnumerable<uint[]>> getRestrictions, uint source, List<uint> targets, List<T> weights,
-            ref EdgePath<T>[] forwardWitness, ref EdgePath<T>[] backwardWitness, uint vertexToSkip)
+            EdgePath<T>[] forwardWitness, EdgePath<T>[] backwardWitness, uint vertexToSkip)
         {
             if (_hopLimit == 1)
             {
-                this.ExistsOneHop(graph, source, targets, weights, ref forwardWitness, ref backwardWitness);
+                this.ExistsOneHop(graph, source, targets, weights, forwardWitness, backwardWitness);
                 return;
             }
 
@@ -233,7 +233,7 @@ namespace Itinero.Algorithms.Contracted.EdgeBased.Witness
                                     }
                                     else
                                     {
-                                        var sequence1Length = edgeEnumerator.GetSequence1(ref _sequence1);
+                                        var sequence1Length = edgeEnumerator.GetSequence1(_sequence1);
                                         //var neighbourSequence = edgeEnumerator.GetSequence1();
                                         if (sequence.Length > 1 && sequence[sequence.Length - 2] == _sequence1[0])
                                         { // a t-turn!
@@ -314,7 +314,7 @@ namespace Itinero.Algorithms.Contracted.EdgeBased.Witness
         /// Calculates witness paths with just one hop.
         /// </summary>
         public void ExistsOneHop(DirectedDynamicGraph graph, uint source, List<uint> targets, List<T> weights,
-            ref EdgePath<T>[] forwardExists, ref EdgePath<T>[] backwardExists)
+            EdgePath<T>[] forwardExists, EdgePath<T>[] backwardExists)
         {
             var targetsToCalculate = new HashSet<uint>();
             var maxWeight = _weightHandler.Zero;

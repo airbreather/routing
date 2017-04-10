@@ -42,7 +42,7 @@ namespace Itinero.Test.Algorithms.Contracted.EdgeBased
         }
 
         public void Calculate(DirectedDynamicGraph graph, Func<uint, IEnumerable<uint[]>> getRestrictions, uint source, List<uint> targets, List<float> weights, 
-            ref EdgePath<float>[] forwardWitness, ref EdgePath<float>[] backwardWitness, uint vertexToSkip)
+            EdgePath<float>[] forwardWitness, EdgePath<float>[] backwardWitness, uint vertexToSkip)
         {
             for(var i = 0; i < forwardWitness.Length; i++)
             {
