@@ -11,12 +11,24 @@ namespace Itinero.Build
     {
         private byte* headPtr;
 
-        private int shBits;
-
         private long length;
 
         public UnmanagedMemoryArray(long length)
         {
+            if (!(typeof(T) == typeof(byte) ||
+                  typeof(T) == typeof(sbyte) ||
+                  typeof(T) == typeof(short) ||
+                  typeof(T) == typeof(ushort) ||
+                  typeof(T) == typeof(int) ||
+                  typeof(T) == typeof(uint) ||
+                  typeof(T) == typeof(long) ||
+                  typeof(T) == typeof(ulong) ||
+                  typeof(T) == typeof(float) ||
+                  typeof(T) == typeof(double)))
+            {
+                throw new NotSupportedException(typeof(T).Name);
+            }
+
             if (length < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(length), length, "Must be nonnegative.");
@@ -27,16 +39,8 @@ namespace Itinero.Build
                 return;
             }
 
-            // TODO: also test that T is blittable.
-            if ((Unsafe.SizeOf<T>() & (Unsafe.SizeOf<T>() - 1)) != 0)
-            {
-                throw new NotSupportedException("Only structs with power-of-two size are supported.");
-            }
-
-            this.shBits = (int)Math.Log(Unsafe.SizeOf<T>(), 2);
             this.length = length;
-
-            long byteCount = length << this.shBits;
+            long byteCount = length * Unsafe.SizeOf<T>();
             this.headPtr = (byte*)Marshal.AllocHGlobal(new IntPtr(byteCount)).ToPointer();
             GC.AddMemoryPressure(byteCount);
         }
@@ -45,8 +49,127 @@ namespace Itinero.Build
 
         public override T this[long idx]
         {
-            get => Unsafe.Read<T>(this.headPtr + (idx << this.shBits));
-            set => Unsafe.Write(this.headPtr + (idx << this.shBits), value);
+            get
+            {
+                // NOTE: these aren't actually runtime checks once the JIT gets through with them.
+                if (typeof(T) == typeof(byte))
+                {
+                    return Unsafe.Read<T>(this.headPtr + idx);
+                }
+
+                if (typeof(T) == typeof(sbyte))
+                {
+                    return Unsafe.Read<T>((sbyte*)this.headPtr + idx);
+                }
+
+                if (typeof(T) == typeof(short))
+                {
+                    return Unsafe.Read<T>((short*)this.headPtr + idx);
+                }
+
+                if (typeof(T) == typeof(ushort))
+                {
+                    return Unsafe.Read<T>((ushort*)this.headPtr + idx);
+                }
+
+                if (typeof(T) == typeof(int))
+                {
+                    return Unsafe.Read<T>((int*)this.headPtr + idx);
+                }
+
+                if (typeof(T) == typeof(uint))
+                {
+                    return Unsafe.Read<T>((uint*)this.headPtr + idx);
+                }
+
+                if (typeof(T) == typeof(long))
+                {
+                    return Unsafe.Read<T>((long*)this.headPtr + idx);
+                }
+
+                if (typeof(T) == typeof(ulong))
+                {
+                    return Unsafe.Read<T>((ulong*)this.headPtr + idx);
+                }
+
+                if (typeof(T) == typeof(float))
+                {
+                    return Unsafe.Read<T>((float*)this.headPtr + idx);
+                }
+
+                if (typeof(T) == typeof(double))
+                {
+                    return Unsafe.Read<T>((double*)this.headPtr + idx);
+                }
+
+                throw new NotSupportedException(typeof(T).Name);
+            }
+
+            set
+            {
+                // NOTE: these aren't actually runtime checks once the JIT gets through with them.
+                if (typeof(T) == typeof(byte))
+                {
+                    Unsafe.Write(this.headPtr + idx, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(sbyte))
+                {
+                    Unsafe.Write((sbyte*)this.headPtr + idx, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(short))
+                {
+                    Unsafe.Write((short*)this.headPtr + idx, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(ushort))
+                {
+                    Unsafe.Write((ushort*)this.headPtr + idx, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(int))
+                {
+                    Unsafe.Write((int*)this.headPtr + idx, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(uint))
+                {
+                    Unsafe.Write((uint*)this.headPtr + idx, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(long))
+                {
+                    Unsafe.Write((long*)this.headPtr + idx, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(ulong))
+                {
+                    Unsafe.Write((ulong*)this.headPtr + idx, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(float))
+                {
+                    Unsafe.Write((float*)this.headPtr + idx, value);
+                    return;
+                }
+
+                if (typeof(T) == typeof(double))
+                {
+                    Unsafe.Write((double*)this.headPtr + idx, value);
+                    return;
+                }
+
+                throw new NotSupportedException(typeof(T).Name);
+            }
         }
 
         public override long Length => this.length;
@@ -73,10 +196,10 @@ namespace Itinero.Build
                 return;
             }
 
-            long oldByteCount = this.length << this.shBits;
+            long oldByteCount = this.length * Unsafe.SizeOf<T>();
             GC.RemoveMemoryPressure(oldByteCount);
 
-            long byteCount = size << this.shBits;
+            long byteCount = size * Unsafe.SizeOf<T>();
             this.headPtr = (byte*)Marshal.ReAllocHGlobal(new IntPtr(this.headPtr), new IntPtr(byteCount)).ToPointer();
             this.length = size;
             GC.AddMemoryPressure(byteCount);
@@ -84,30 +207,27 @@ namespace Itinero.Build
 
         public override void CopyFrom(Stream stream)
         {
-            if (this.Length == 0)
+            if (this.length == 0)
             {
                 return;
             }
 
-            byte[] buf = new byte[Unsafe.SizeOf<T>()];
-            ref T cur = ref Unsafe.As<byte, T>(ref buf[0]);
-            for (long i = 0; i < this.length; ++i)
+            byte* cur = this.headPtr;
+            byte* end = cur + (this.length * Unsafe.SizeOf<T>());
+            byte[] buf = new byte[81920];
+            fixed (byte* p = buf)
             {
-                int off = 0;
-                int rem = buf.Length;
-                do
+                while (cur < end)
                 {
-                    int cnt = stream.Read(buf, off, rem);
+                    int cnt = stream.Read(buf, 0, unchecked((int)Math.Min(end - cur, buf.Length)));
                     if (cnt == 0)
                     {
                         throw new EndOfStreamException();
                     }
 
-                    rem -= cnt;
-                    off += cnt;
-                } while (rem != 0);
-
-                this[i] = cur;
+                    Buffer.MemoryCopy(p, cur, end - cur, cnt);
+                    cur += cnt;
+                }
             }
         }
 
@@ -118,15 +238,22 @@ namespace Itinero.Build
                 return 0;
             }
 
-            byte[] buf = new byte[Unsafe.SizeOf<T>()];
-            ref T cur = ref Unsafe.As<byte, T>(ref buf[0]);
-            for (long i = 0; i < this.length; ++i)
+            long total = this.length * Unsafe.SizeOf<T>();
+            byte* cur = this.headPtr;
+            byte* end = cur + total;
+            byte[] buf = new byte[81920];
+            fixed (byte* p = buf)
             {
-                cur = this[i];
-                stream.Write(buf, 0, buf.Length);
+                while (cur < end)
+                {
+                    int cnt = unchecked((int)Math.Min(end - cur, buf.Length));
+                    Buffer.MemoryCopy(cur, p, buf.Length, cnt);
+                    stream.Write(buf, 0, cnt);
+                    cur += cnt;
+                }
             }
 
-            return this.length << this.shBits;
+            return total;
         }
 
         private void DisposeCore()
@@ -138,7 +265,7 @@ namespace Itinero.Build
 
             Marshal.FreeHGlobal(new IntPtr(this.headPtr));
             this.headPtr = null;
-            GC.RemoveMemoryPressure(this.length << this.shBits);
+            GC.RemoveMemoryPressure(this.length * Unsafe.SizeOf<T>());
             this.length = 0;
         }
     }
