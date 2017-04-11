@@ -16,17 +16,17 @@
  *  limitations under the License.
  */
 
-using System;
 using Itinero.Algorithms.Collections;
 using Itinero.Algorithms.Contracted.EdgeBased.Witness;
 using Itinero.Algorithms.PriorityQueues;
+using Itinero.Algorithms.Restrictions;
+using Itinero.Algorithms.Weights;
+using Itinero.Data.Contracted.Edges;
 using Itinero.Graphs.Directed;
 using Itinero.Logging;
+using System;
 using System.Collections.Generic;
-using Itinero.Data.Contracted.Edges;
-using Itinero.Algorithms.Restrictions;
 using System.Linq;
-using Itinero.Algorithms.Weights;
 
 namespace Itinero.Algorithms.Contracted.EdgeBased
 {
@@ -151,6 +151,8 @@ namespace Itinero.Algorithms.Contracted.EdgeBased
             _logger.Log(TraceEventType.Information, "Calculating queue...");
 
             _queue.Clear();
+
+#if PCL
             for (uint v = 0; v < _graph.VertexCount; v++)
             {
                 if (!_contractedFlags[v])
@@ -159,6 +161,30 @@ namespace Itinero.Algorithms.Contracted.EdgeBased
                         _contractedFlags, _getRestrictions, v));
                 }
             }
+#else
+            float[] weights = new float[_graph.VertexCount];
+            System.Threading.Tasks.Parallel.For(0L, _graph.VertexCount, i =>
+            {
+                uint v = unchecked((uint)i);
+                if (!_contractedFlags[v])
+                {
+                    // note: if the calculation here is fast relative to contention on the array
+                    // writes, then we can use a different overload of Parallel.For that lets us
+                    // journal up all the writes to a thread-local object and then do them at the
+                    // end with one big sweep per thread; look for the overloads with "TLocal".
+                    weights[v] = _priorityCalculator.Calculate(
+                        _contractedFlags, _getRestrictions, v);
+                }
+            });
+
+            for (uint v = 0; v < _graph.VertexCount; v++)
+            {
+                if (!_contractedFlags[v])
+                {
+                    _queue.Push(v, weights[v]);
+                }
+            }
+#endif
         }
 
         /// <summary>
