@@ -29,8 +29,6 @@ namespace Itinero.Algorithms.Contracted.Witness
     /// </summary>
     public class DykstraWitnessCalculator : IWitnessCalculator
     {
-        private readonly BinaryHeap<SettledVertex> _heap;
-
         /// <summary>
         /// Creates a new witness calculator.
         /// </summary>
@@ -47,7 +45,6 @@ namespace Itinero.Algorithms.Contracted.Witness
         {
             _hopLimit = hopLimit;
 
-            _heap = new BinaryHeap<SettledVertex>();
             _maxSettles = maxSettles;
         }
         
@@ -99,14 +96,14 @@ namespace Itinero.Algorithms.Contracted.Witness
             // creates the priorty queue.
             var forwardMinWeight = new Dictionary<uint, float>();
             var backwardMinWeight = new Dictionary<uint, float>();
-            _heap.Clear();
-            _heap.Push(new SettledVertex(source, 0, 0, forwardMaxWeight > 0, backwardMaxWeight > 0), 0);
+            var heap = new BinaryHeap<SettledVertex>();
+            heap.Push(new SettledVertex(source, 0, 0, forwardMaxWeight > 0, backwardMaxWeight > 0), 0);
 
             // keep looping until the queue is empty or the target is found!
             var edgeEnumerator = graph.GetEdgeEnumerator();
-            while (_heap.Count > 0)
+            while (heap.Count > 0)
             { // pop the first customer.
-                var current = _heap.Pop();
+                var current = heap.Pop();
                 if (current.Hops + 1 < _hopLimit)
                 {
                     if (current.VertexId == vertexToSkip)
@@ -230,7 +227,7 @@ namespace Itinero.Algorithms.Contracted.Witness
                                 { // add to heap.
                                     var newSettle = new SettledVertex(neighbour,
                                         totalNeighbourWeight, current.Hops + 1, doNeighbourForward, doNeighbourBackward);
-                                    _heap.Push(newSettle, newSettle.Weight);
+                                    heap.Push(newSettle, newSettle.Weight);
                                 }
                             }
                         }

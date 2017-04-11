@@ -69,8 +69,8 @@ namespace Itinero.Algorithms.PriorityQueues
             // increase size if needed.
             if (_latestIndex == _priorities.Length - 1)
             { // time to increase size!
-                Array.Resize<T>(ref _heap, _heap.Length + 100);
-                Array.Resize<float>(ref _priorities, _priorities.Length + 100);
+                Array.Resize<T>(ref _heap, Math.Max(_heap.Length * 2, 128));
+                Array.Resize<float>(ref _priorities, Math.Max(_priorities.Length * 2, 128));
             }
 
             // add the item at the first free point 

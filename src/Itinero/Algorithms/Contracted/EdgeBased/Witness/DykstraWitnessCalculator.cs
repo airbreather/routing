@@ -31,7 +31,6 @@ namespace Itinero.Algorithms.Contracted.EdgeBased.Witness
     public class DykstraWitnessCalculator<T> : IWitnessCalculator<T>
         where T : struct
     {
-        private readonly BinaryHeap<SettledEdge> _heap;
         private readonly WeightHandler<T> _weightHandler;
 
         /// <summary>
@@ -51,7 +50,6 @@ namespace Itinero.Algorithms.Contracted.EdgeBased.Witness
             _hopLimit = hopLimit;
             _weightHandler = weightHandler;
 
-            _heap = new BinaryHeap<SettledEdge>();
             _maxSettles = maxSettles;
         }
 
@@ -109,14 +107,14 @@ namespace Itinero.Algorithms.Contracted.EdgeBased.Witness
             // creates the priorty queue.
             var forwardMinWeight = new Dictionary<EdgePath<T>, T>();
             var backwardMinWeight = new Dictionary<EdgePath<T>, T>();
-            _heap.Clear();
-            _heap.Push(new SettledEdge(new EdgePath<T>(source), 0, _weightHandler.GetMetric(forwardMaxWeight) > 0, _weightHandler.GetMetric(backwardMaxWeight) > 0), 0);
+            var heap = new BinaryHeap<SettledEdge>();
+            heap.Push(new SettledEdge(new EdgePath<T>(source), 0, _weightHandler.GetMetric(forwardMaxWeight) > 0, _weightHandler.GetMetric(backwardMaxWeight) > 0), 0);
 
             // keep looping until the queue is empty or the target is found!
             var edgeEnumerator = graph.GetEdgeEnumerator();
-            while (_heap.Count > 0)
+            while (heap.Count > 0)
             { // pop the first customer.
-                var current = _heap.Pop();
+                var current = heap.Pop();
                 if (current.Hops + 1 < _hopLimit)
                 {
                     if (current.Path.Vertex == vertexToSkip)
@@ -301,7 +299,7 @@ namespace Itinero.Algorithms.Contracted.EdgeBased.Witness
                                 if (doNeighbourBackward || doNeighbourForward)
                                 { // add to heap.
                                     var newSettle = new SettledEdge(neighbourPath, current.Hops + 1, doNeighbourForward, doNeighbourBackward);
-                                    _heap.Push(newSettle, _weightHandler.GetMetric(neighbourPath.Weight));
+                                    heap.Push(newSettle, _weightHandler.GetMetric(neighbourPath.Weight));
                                 }
                             }
                         }
