@@ -137,21 +137,24 @@ namespace Itinero.Graphs.Directed
         }
 
         private long _edgeCount;
-
+        
         /// <summary>
-        /// Increases the memory allocation.
+        /// Increases the size of the vector-array.
         /// </summary>
-        private void IncreaseVertexSize(long minimumSize)
+        private void EnsureVertexCapacity(long idx)
         {
-            var newSize = _vertices.Length;
-            while(newSize < minimumSize)
+            if (idx < _vertices.Length)
             {
-                newSize += 10000;
+                return;
             }
-            if (newSize > _vertices.Length)
+
+            long len = Math.Max(64, _vertices.Length);
+            do
             {
-                this.SetVertexSize(newSize);
+                len *= 2;
             }
+            while (idx >= len);
+            this.SetVertexSize(len);
         }
 
         /// <summary>
@@ -167,11 +170,22 @@ namespace Itinero.Graphs.Directed
         }
 
         /// <summary>
-        /// Increases the memory allocation.
+        /// Increases the size of the vector-data array.
         /// </summary>
-        private void IncreaseEdgeSize()
+        private void EnsureEdgeCapacity(long size)
         {
-            this.IncreaseEdgeSize(_edges.Length + 10000);
+            if (size < _edges.Length)
+            {
+                return;
+            }
+
+            long len = Math.Max(64, _edges.Length);
+            do
+            {
+                len *= 2;
+            }
+            while (size >= len);
+            this.IncreaseEdgeSize(len);
         }
 
         /// <summary>
@@ -192,8 +206,7 @@ namespace Itinero.Graphs.Directed
         {
             if (_readonly) { throw new Exception("Graph is readonly."); }
             if (vertex1 == vertex2) { throw new ArgumentException("Given vertices must be different."); }
-            if (((vertex1 * VERTEX_SIZE) + EDGE_COUNT) > _vertices.Length - 1) { this.IncreaseVertexSize(((vertex1 * VERTEX_SIZE) + EDGE_COUNT)); }
-            if (((vertex2 * VERTEX_SIZE) + EDGE_COUNT) > _vertices.Length - 1) { this.IncreaseVertexSize(((vertex2 * VERTEX_SIZE) + EDGE_COUNT)); }
+            this.EnsureVertexCapacity(Math.Max(vertex1, vertex2) * VERTEX_SIZE + EDGE_COUNT);
             if (_edgeDataSize != 1) { throw new ArgumentOutOfRangeException("Dimension of data doesn't match."); }
 
             var vertexPointer = vertex1 * VERTEX_SIZE;
@@ -207,10 +220,8 @@ namespace Itinero.Graphs.Directed
                 _vertices[vertexPointer + FIRST_EDGE] = _nextEdgePointer / (uint)_edgeSize;
                 edgeId = _nextEdgePointer / (uint)_edgeSize;
 
-                if (_nextEdgePointer + (1 * _edgeSize) >= _edges.Length)
-                { // make sure we can add another edge.
-                    this.IncreaseEdgeSize();
-                }
+                // make sure we can add another edge.
+                this.EnsureEdgeCapacity(_nextEdgePointer + (1 * _edgeSize));
 
                 _edges[_nextEdgePointer] = vertex2;
                 _edges[_nextEdgePointer + MINIMUM_EDGE_SIZE + 0] = data;
@@ -218,10 +229,8 @@ namespace Itinero.Graphs.Directed
             }
             else if ((edgeCount & (edgeCount - 1)) == 0)
             { // edgeCount is a power of two, increase space.
-                if (_nextEdgePointer + (edgeCount * _edgeSize) >= _edges.Length)
-                { // make sure we can add another edge.
-                    this.IncreaseEdgeSize();
-                }
+                // make sure we can add another edge.
+                this.EnsureEdgeCapacity(_nextEdgePointer + (edgeCount * _edgeSize));
 
                 if (edgePointer == (_nextEdgePointer - (edgeCount * _edgeSize)))
                 { // these edge are at the end of the edge-array, don't copy just increase size.
@@ -239,10 +248,8 @@ namespace Itinero.Graphs.Directed
                     // keep new pointer & duplicate space for this vertex.
                     var newNextEdgePointer = _nextEdgePointer + (uint)(edgeCount * 2 * _edgeSize);
 
-                    if (_nextEdgePointer + (edgeCount * _edgeSize) >= _edges.Length)
-                    { // make sure we can add another edge.
-                        this.IncreaseEdgeSize();
-                    }
+                    // make sure we can add another edge.
+                    this.EnsureEdgeCapacity(_nextEdgePointer + (edgeCount * _edgeSize));
 
                     for (var edge = 0; edge < edgeCount; edge++)
                     {
@@ -259,16 +266,12 @@ namespace Itinero.Graphs.Directed
                         }
                         _nextEdgePointer += (uint)_edgeSize;
 
-                        if (_nextEdgePointer >= _edges.Length)
-                        { // make sure we can add another edge.
-                            this.IncreaseEdgeSize();
-                        }
+                        // make sure we can add another edge.
+                        this.EnsureEdgeCapacity(_nextEdgePointer + (edgeCount * _edgeSize));
                     }
 
-                    if (_nextEdgePointer + (edgeCount * _edgeSize) >= _edges.Length)
-                    { // make sure we can add another edge.
-                        this.IncreaseEdgeSize();
-                    }
+                    // make sure we can add another edge.
+                    this.EnsureEdgeCapacity(_nextEdgePointer + (edgeCount * _edgeSize));
 
                     // add at the end.
                     _edges[_nextEdgePointer] = vertex2;
@@ -297,8 +300,7 @@ namespace Itinero.Graphs.Directed
         {
             if (_readonly) { throw new Exception("Graph is readonly."); }
             if (vertex1 == vertex2) { throw new ArgumentException("Given vertices must be different."); }
-            if (((vertex1 * VERTEX_SIZE) + EDGE_COUNT) > _vertices.Length - 1) { this.IncreaseVertexSize(((vertex1 * VERTEX_SIZE) + EDGE_COUNT)); }
-            if (((vertex2 * VERTEX_SIZE) + EDGE_COUNT) > _vertices.Length - 1) { this.IncreaseVertexSize(((vertex2 * VERTEX_SIZE) + EDGE_COUNT)); }
+            this.EnsureVertexCapacity(Math.Max(vertex1, vertex2) * VERTEX_SIZE + EDGE_COUNT);
 
             var vertexPointer = vertex1 * VERTEX_SIZE;
             var edgeCount = _vertices[vertexPointer + EDGE_COUNT];
@@ -311,10 +313,8 @@ namespace Itinero.Graphs.Directed
                 _vertices[vertexPointer + FIRST_EDGE] = _nextEdgePointer / (uint)_edgeSize;
                 edgeId = _nextEdgePointer / (uint)_edgeSize;
 
-                if (_nextEdgePointer + (1 * _edgeSize) >= _edges.Length)
-                { // make sure we can add another edge.
-                    this.IncreaseEdgeSize();
-                }
+                // make sure we can add another edge.
+                this.EnsureEdgeCapacity(_nextEdgePointer + (1 * _edgeSize));
 
                 _edges[_nextEdgePointer] = vertex2;
                 for (uint i = 0; i < _edgeDataSize; i++)
@@ -326,10 +326,8 @@ namespace Itinero.Graphs.Directed
             }
             else if ((edgeCount & (edgeCount - 1)) == 0)
             { // edgeCount is a power of two, increase space.
-                if (_nextEdgePointer + (edgeCount * _edgeSize) >= _edges.Length)
-                { // make sure we can add another edge.
-                    this.IncreaseEdgeSize();
-                }
+                // make sure we can add another edge.
+                this.EnsureEdgeCapacity(_nextEdgePointer + (edgeCount * _edgeSize));
 
                 if (edgePointer == (_nextEdgePointer - (edgeCount * _edgeSize)))
                 { // these edge are at the end of the edge-array, don't copy just increase size.
@@ -351,10 +349,8 @@ namespace Itinero.Graphs.Directed
                     // keep new pointer & duplicate space for this vertex.
                     var newNextEdgePointer = _nextEdgePointer + (uint)(edgeCount * 2 * _edgeSize);
 
-                    if (_nextEdgePointer + (edgeCount * _edgeSize) >= _edges.Length)
-                    { // make sure we can add another edge.
-                        this.IncreaseEdgeSize();
-                    }
+                    // make sure we can add another edge.
+                    this.EnsureEdgeCapacity(_nextEdgePointer + (edgeCount * _edgeSize));
 
                     for (var edge = 0; edge < edgeCount; edge++)
                     {
@@ -371,16 +367,12 @@ namespace Itinero.Graphs.Directed
                         }
                         _nextEdgePointer += (uint)_edgeSize;
 
-                        if (_nextEdgePointer >= _edges.Length)
-                        { // make sure we can add another edge.
-                            this.IncreaseEdgeSize();
-                        }
+                        // make sure we can add another edge.
+                        this.EnsureEdgeCapacity(_nextEdgePointer + (edgeCount * _edgeSize));
                     }
 
-                    if (_nextEdgePointer + (edgeCount * _edgeSize) >= _edges.Length)
-                    { // make sure we can add another edge.
-                        this.IncreaseEdgeSize();
-                    }
+                    // make sure we can add another edge.
+                    this.EnsureEdgeCapacity(_nextEdgePointer + (edgeCount * _edgeSize));
 
                     // add at the end.
                     _edges[_nextEdgePointer] = vertex2;
@@ -417,8 +409,7 @@ namespace Itinero.Graphs.Directed
         {
             if (_readonly) { throw new Exception("Graph is readonly."); }
             if (vertex1 == vertex2) { throw new ArgumentException("Given vertices must be different."); }
-            if (((vertex1 * VERTEX_SIZE) + EDGE_COUNT) > _vertices.Length - 1) { this.IncreaseVertexSize(((vertex1 * VERTEX_SIZE) + EDGE_COUNT)); }
-            if (((vertex2 * VERTEX_SIZE) + EDGE_COUNT) > _vertices.Length - 1) { this.IncreaseVertexSize(((vertex2 * VERTEX_SIZE) + EDGE_COUNT)); }
+            this.EnsureVertexCapacity(Math.Max(vertex1, vertex2) * VERTEX_SIZE + EDGE_COUNT);
 
             var vertexPointer = vertex1 * VERTEX_SIZE;
             var edgeCount = _vertices[vertexPointer + EDGE_COUNT];
