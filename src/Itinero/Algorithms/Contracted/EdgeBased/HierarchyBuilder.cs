@@ -163,19 +163,23 @@ namespace Itinero.Algorithms.Contracted.EdgeBased
             }
 #else
             float[] weights = new float[_graph.VertexCount];
-            System.Threading.Tasks.Parallel.For(0L, _graph.VertexCount, i =>
-            {
-                uint v = unchecked((uint)i);
-                if (!_contractedFlags[v])
+            System.Threading.Tasks.Parallel.ForEach(System.Collections.Concurrent.Partitioner.Create(0, _graph.VertexCount, 50000),
+                tup =>
                 {
-                    // note: if the calculation here is fast relative to contention on the array
-                    // writes, then we can use a different overload of Parallel.For that lets us
-                    // journal up all the writes to a thread-local object and then do them at the
-                    // end with one big sweep per thread; look for the overloads with "TLocal".
-                    weights[v] = _priorityCalculator.Calculate(
-                        _contractedFlags, _getRestrictions, v);
-                }
-            });
+                    for (long i = tup.Item1; i < tup.Item2; ++i)
+                    {
+                        uint v = unchecked((uint)i);
+                        if (!_contractedFlags[v])
+                        {
+                            // note: if the calculation here is fast relative to contention on the array
+                            // writes, then we can use a different overload of Parallel.For that lets us
+                            // journal up all the writes to a thread-local object and then do them at the
+                            // end with one big sweep per thread; look for the overloads with "TLocal".
+                            weights[v] = _priorityCalculator.Calculate(
+                                _contractedFlags, _getRestrictions, v);
+                        }
+                    }
+                });
 
             for (uint v = 0; v < _graph.VertexCount; v++)
             {
