@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -14,7 +15,7 @@ namespace Itinero.Build
 
         private long length;
 
-        public UnmanagedMemoryArray(long length)
+        public UnmanagedMemoryArray(long size)
         {
             // TODO: support compatible complex types
             if (!(typeof(T) == typeof(byte) ||
@@ -31,20 +32,12 @@ namespace Itinero.Build
                 throw new NotSupportedException(typeof(T).Name);
             }
 
-            if (length < 0)
+            if (size < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(length), length, "Must be nonnegative.");
+                throw new ArgumentOutOfRangeException(nameof(size), size, "Must be nonnegative.");
             }
 
-            if (length == 0)
-            {
-                return;
-            }
-
-            this.length = length;
-            long byteCount = length * SizeOf<T>();
-            this.headPtr = (byte*)Marshal.AllocHGlobal(new IntPtr(byteCount)).ToPointer();
-            GC.AddMemoryPressure(byteCount);
+            this.Resize(size);
         }
 
         ~UnmanagedMemoryArray() => this.DisposeCore();
@@ -79,19 +72,28 @@ namespace Itinero.Build
                 return;
             }
 
-            long oldByteCount = this.length * SizeOf<T>();
-            GC.RemoveMemoryPressure(oldByteCount);
-
             long byteCount = size * SizeOf<T>();
-            this.headPtr = (byte*)Marshal.ReAllocHGlobal(new IntPtr(this.headPtr), new IntPtr(byteCount)).ToPointer();
+            if (this.headPtr == null)
+            {
+                Debug.Assert(this.length == 0, "headPtr should be null iff our length is 0.");
+                this.headPtr = (byte*)Marshal.AllocHGlobal(new IntPtr(byteCount)).ToPointer();
+            }
+            else
+            {
+                long oldByteCount = this.length * SizeOf<T>();
+                GC.RemoveMemoryPressure(oldByteCount);
+                this.headPtr = (byte*)Marshal.ReAllocHGlobal(new IntPtr(this.headPtr), new IntPtr(byteCount)).ToPointer();
+            }
+
             this.length = size;
             GC.AddMemoryPressure(byteCount);
         }
 
         public override void CopyFrom(Stream stream)
         {
-            if (this.length == 0)
+            if (this.headPtr == null)
             {
+                Debug.Assert(this.length == 0, "headPtr should be null iff our length is 0.");
                 return;
             }
 
@@ -116,8 +118,9 @@ namespace Itinero.Build
 
         public override long CopyTo(Stream stream)
         {
-            if (this.length == 0)
+            if (this.headPtr == null)
             {
+                Debug.Assert(this.length == 0, "headPtr should be null iff our length is 0.");
                 return 0;
             }
 
@@ -143,6 +146,7 @@ namespace Itinero.Build
         {
             if (this.headPtr == null)
             {
+                Debug.Assert(this.length == 0, "headPtr should be null iff our length is 0.");
                 return;
             }
 
