@@ -94,7 +94,7 @@ namespace Itinero.Graphs.Directed
         {
             var oldEdgePointer = oldId * _edgeDataSize;
             var newEdgePointer = newId * _edgeDataSize;
-            this.EnsureEdgeCapacity(newEdgePointer + _edgeDataSize);
+            this.EnsureEdgeDataSize(newEdgePointer + _edgeDataSize + 1);
             for (var i = 0; i < _edgeDataSize; i++)
             {
                 _edgeData[newEdgePointer + i] = _edgeData[oldEdgePointer + i];
@@ -102,22 +102,35 @@ namespace Itinero.Graphs.Directed
         }
 
         /// <summary>
-        /// Increase edge data size to fit at least the given edge.
+        /// Ensures that the edge data array is at least this large.
         /// </summary>
-        private void EnsureEdgeCapacity(long size)
+        /// <param name="minimumSize">
+        /// The minimum size for the edge data array.
+        /// </param>
+        private void EnsureEdgeDataSize(long minimumSize)
         {
-            if (size < _edgeData.Length)
+            if (_edgeData.Length < minimumSize)
             {
-                return;
+                IncreaseEdgeDataSize(minimumSize);
+            }
+        }
+
+        /// <summary>
+        /// Increase edge data size to at least the given size.
+        /// </summary>
+        private void IncreaseEdgeDataSize(long minimumSize)
+        {
+            var oldLength = _edgeData.Length;
+
+            // fast-forward, perhaps, through the first several resizes.
+            // Math.Max also ensures that we can resize from 0.
+            var size = Math.Max(1024, oldLength);
+            while (size < minimumSize)
+            {
+                size *= 2;
             }
 
-            long len = Math.Max(64, _edgeData.Length);
-            do
-            {
-                len *= 2;
-            }
-            while (size >= len);
-            this._edgeData.Resize(len);
+            _edgeData.Resize(size);
         }
 
         /// <summary>
@@ -129,8 +142,8 @@ namespace Itinero.Graphs.Directed
             if (_edgeDataSize != 1) { throw new ArgumentOutOfRangeException("Dimension of meta-data doesn't match."); }
 
             var edgeId = _graph.AddEdge(vertex1, vertex2, data);
-            this.EnsureEdgeCapacity(edgeId + _edgeDataSize);
             var edgePointer = edgeId * _edgeDataSize;
+            this.EnsureEdgeDataSize(edgePointer + 1);
             _edgeData[edgePointer + 0] = metaData;
             return edgeId;
         }
@@ -142,8 +155,8 @@ namespace Itinero.Graphs.Directed
         public uint AddEdge(uint vertex1, uint vertex2, uint[] data, params uint[] metaData)
         {
             var edgeId = _graph.AddEdge(vertex1, vertex2, data);
-            this.EnsureEdgeCapacity((edgeId + 1) * _edgeDataSize);
             var edgePointer = edgeId * _edgeDataSize;
+            this.EnsureEdgeDataSize(edgePointer + _edgeDataSize + 1);
             for (var i = 0; i < _edgeDataSize; i++)
             {
                 _edgeData[edgePointer + i] = metaData[i];
