@@ -67,11 +67,8 @@ namespace Itinero.IO.Osm.Streams
         {
             int int1, int2;
             long2doubleInt(id, out int1, out int2);
-            
-            if (_idx + 2 >= _index.Length)
-            {
-                _index.Resize(_index.Length + (1024 * 1024));
-            }
+
+            this.EnsureIndexSize(_idx + 2);
             _index[_idx + 0] = int1;
             _index[_idx + 1] = int2;
             _idx += 2;
@@ -158,16 +155,7 @@ namespace Itinero.IO.Osm.Streams
         {
             var idx = TryGetIndex(id);
 
-            if ((idx * 2) + 1 >= _data.Length)
-            {
-                var start = _data.Length;
-                _data.Resize((idx * 2) + 1 + 1024);
-                for (var i = start; i < ((idx * 2) + 1 + 1024); i++)
-                {
-                    _data[i] = int.MaxValue;
-                }
-            }
-
+            this.EnsureDataSize((idx * 2) + 2);
             _data[(idx * 2) + 0] = unchecked((int)vertex);
             _data[(idx * 2) + 1] = int.MinValue;
         }
@@ -179,16 +167,8 @@ namespace Itinero.IO.Osm.Streams
         {
             int lat = (int)(latitude * 10000000);
             int lon = (int)(longitude * 10000000);
-            
-            if ((idx * 2) + 1 >= _data.Length)
-            {
-                var start = _data.Length;
-                _data.Resize((idx * 2) + 1 + 1024);
-                for(var i = start; i < ((idx * 2) + 1 + 1024); i++)
-                {
-                    _data[i] = int.MaxValue;
-                }
-            }
+
+            this.EnsureDataSize((idx * 2) + 2);
             _data[(idx * 2) + 0] = lat;
             _data[(idx * 2) + 1] = lon;
         }
@@ -481,7 +461,57 @@ namespace Itinero.IO.Osm.Streams
             longitude = (float)(lon / 10000000.0);
             return true;
         }
-        
+
+        private void EnsureIndexSize(long minimumSize)
+        {
+            if (_index.Length < minimumSize)
+            {
+                this.IncreaseIndexSize(minimumSize);
+            }
+        }
+
+        private void IncreaseIndexSize(long minimumSize)
+        {
+            long oldSize = _index.Length;
+
+            // fast-forward, perhaps, through the first several resizes.
+            // Math.Max also ensures that we can resize from 0.
+            long size = Math.Max(1024 * 1024, oldSize * 2);
+            while (size < minimumSize)
+            {
+                size *= 2;
+            }
+
+            _index.Resize(size);
+        }
+
+        private void EnsureDataSize(long minimumSize)
+        {
+            if (_data.Length < minimumSize)
+            {
+                this.IncreaseDataSize(minimumSize);
+            }
+        }
+
+        private void IncreaseDataSize(long minimumSize)
+        {
+            long oldSize = _data.Length;
+
+            // fast-forward, perhaps, through the first several resizes.
+            // Math.Max also ensures that we can resize from 0.
+            long size = Math.Max(1024, oldSize * 2);
+            while (size < minimumSize)
+            {
+                size *= 2;
+            }
+
+            _data.Resize(size);
+            for (long i = oldSize; i < size; i++)
+            {
+                _data[i] = int.MaxValue;
+            }
+        }
+
         /// <summary>
         /// Returns the number of elements.
         /// </summary>
