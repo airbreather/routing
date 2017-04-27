@@ -35,7 +35,7 @@ namespace Itinero.Graphs
         private const int NODEB = 1;
         private const int NEXTNODEA = 2;
         private const int NEXTNODEB = 3;
-        private const int BLOCKSIZE = 1000;
+        private const int DEFAULT_SIZE_ESTIMATE = 1024;
 
         private readonly int _edgeSize = -1;
         private readonly int _edgeDataSize = -1;
@@ -46,7 +46,7 @@ namespace Itinero.Graphs
         /// Creates a new graph.
         /// </summary>
         public Graph(int edgeDataSize)
-            : this(edgeDataSize, BLOCKSIZE)
+            : this(edgeDataSize, DEFAULT_SIZE_ESTIMATE)
         {
 
         }
@@ -152,26 +152,36 @@ namespace Itinero.Graphs
         private uint? _maxVertex = null;
 
         /// <summary>
-        /// Increases the size of the vertex-array.
+        /// Ensures that the vertex-array is at least this large.
         /// </summary>
-        private void IncreaseVertexSize()
+        /// <param name="minimumSize">
+        /// The minimum size for the vertex-array.
+        /// </param>
+        private void EnsureVertexSize(long minimumSize)
         {
-            this.IncreaseVertexSize(_vertices.Length + BLOCKSIZE);
+            if (_vertices.Length < minimumSize)
+            {
+                IncreaseVertexSize(minimumSize);
+            }
         }
 
         /// <summary>
         /// Increases the size of the vertex-array.
         /// </summary>
-        private void IncreaseVertexSize(long min)
+        private void IncreaseVertexSize(long minimumSize)
         {
-            var newSize = (long)(System.Math.Floor((double)min / BLOCKSIZE) + 1) * (long)BLOCKSIZE;
-            if (newSize < _vertices.Length)
-            { // no need to increase, already big enough.
-                return;
-            }
             var oldLength = _vertices.Length;
-            _vertices.Resize(newSize);
-            for (long idx = oldLength; idx < newSize; idx++)
+
+            // fast-forward, perhaps, through the first several resizes.
+            // Math.Max also ensures that we can resize from 0.
+            var size = Math.Max(DEFAULT_SIZE_ESTIMATE, oldLength);
+            while (size < minimumSize)
+            {
+                size *= 2;
+            }
+
+            _vertices.Resize(size);
+            for (long idx = oldLength; idx < size; idx++)
             {
                 _vertices[idx] = Constants.NO_VERTEX;
             }
@@ -180,17 +190,29 @@ namespace Itinero.Graphs
         /// <summary>
         /// Increases the memory allocation.
         /// </summary>
-        private void IncreaseEdgeSize()
+        private void EnsureEdgeSize(long minimumSize)
         {
-            this.IncreaseEdgeSize(_edges.Length + 10000);
+            if (_edges.Length < minimumSize)
+            {
+                IncreaseEdgeSize(minimumSize);
+            }
         }
 
         /// <summary>
         /// Increases the memory allocation.
         /// </summary>
-        private void IncreaseEdgeSize(long size)
+        private void IncreaseEdgeSize(long minimumSize)
         {
             var oldLength = _edges.Length;
+
+            // fast-forward, perhaps, through the first several resizes.
+            // Math.Max also ensures that we can resize from 0.
+            var size = Math.Max(16384, oldLength);
+            while (size < minimumSize)
+            {
+                size *= 2;
+            }
+
             _edges.Resize(size);
             for (long idx = oldLength; idx < size; idx++)
             {
@@ -203,10 +225,8 @@ namespace Itinero.Graphs
         /// </summary>
         public void AddVertex(uint vertex)
         {
-            if (vertex > _vertices.Length - 1)
-            { // increase space.
-                this.IncreaseVertexSize(vertex);
-            }
+            // increase space if needed.
+            this.EnsureVertexSize(vertex + 1);
             if (_maxVertex == null || _maxVertex.Value < vertex)
             { // update max vertex.
                 _maxVertex = vertex;
@@ -332,10 +352,9 @@ namespace Itinero.Graphs
 
                 // create a new edge.
                 edgeId = _nextEdgeId;
-                if (_nextEdgeId + NEXTNODEB >= _edges.Length)
-                { // there is a need to increase edges array.
-                    this.IncreaseEdgeSize();
-                }
+
+                // there may be a need to increase edges array.
+                this.EnsureEdgeSize(_nextEdgeId + NEXTNODEB + 1);
                 _edges[_nextEdgeId + NODEA] = vertex1;
                 _edges[_nextEdgeId + NODEB] = vertex2;
                 _edges[_nextEdgeId + NEXTNODEA] = Constants.NO_EDGE;
@@ -358,10 +377,8 @@ namespace Itinero.Graphs
                 edgeId = _nextEdgeId;
                 _vertices[vertex1] = _nextEdgeId;
 
-                if (_nextEdgeId + NEXTNODEB >= _edges.Length)
-                { // there is a need to increase edges array.
-                    this.IncreaseEdgeSize();
-                }
+                // there may be a need to increase edges array.
+                this.EnsureEdgeSize(_nextEdgeId + NEXTNODEB + 1);
                 _edges[_nextEdgeId + NODEA] = vertex1;
                 _edges[_nextEdgeId + NODEB] = vertex2;
                 _edges[_nextEdgeId + NEXTNODEA] = Constants.NO_EDGE;
