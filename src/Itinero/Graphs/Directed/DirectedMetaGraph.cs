@@ -94,43 +94,11 @@ namespace Itinero.Graphs.Directed
         {
             var oldEdgePointer = oldId * _edgeDataSize;
             var newEdgePointer = newId * _edgeDataSize;
-            this.EnsureEdgeDataSize(newEdgePointer + _edgeDataSize + 1);
+            _edgeData.EnsureMinimumSize(newEdgePointer + _edgeDataSize + 1);
             for (var i = 0; i < _edgeDataSize; i++)
             {
                 _edgeData[newEdgePointer + i] = _edgeData[oldEdgePointer + i];
             }
-        }
-
-        /// <summary>
-        /// Ensures that the edge data array is at least this large.
-        /// </summary>
-        /// <param name="minimumSize">
-        /// The minimum size for the edge data array.
-        /// </param>
-        private void EnsureEdgeDataSize(long minimumSize)
-        {
-            if (_edgeData.Length < minimumSize)
-            {
-                IncreaseEdgeDataSize(minimumSize);
-            }
-        }
-
-        /// <summary>
-        /// Increase edge data size to at least the given size.
-        /// </summary>
-        private void IncreaseEdgeDataSize(long minimumSize)
-        {
-            var oldLength = _edgeData.Length;
-
-            // fast-forward, perhaps, through the first several resizes.
-            // Math.Max also ensures that we can resize from 0.
-            var size = Math.Max(1024, oldLength);
-            while (size < minimumSize)
-            {
-                size *= 2;
-            }
-
-            _edgeData.Resize(size);
         }
 
         /// <summary>
@@ -143,7 +111,7 @@ namespace Itinero.Graphs.Directed
 
             var edgeId = _graph.AddEdge(vertex1, vertex2, data);
             var edgePointer = edgeId * _edgeDataSize;
-            this.EnsureEdgeDataSize(edgePointer + 1);
+            _edgeData.EnsureMinimumSize(edgePointer + 1);
             _edgeData[edgePointer + 0] = metaData;
             return edgeId;
         }
@@ -156,7 +124,7 @@ namespace Itinero.Graphs.Directed
         {
             var edgeId = _graph.AddEdge(vertex1, vertex2, data);
             var edgePointer = edgeId * _edgeDataSize;
-            this.EnsureEdgeDataSize(edgePointer + _edgeDataSize + 1);
+            _edgeData.EnsureMinimumSize(edgePointer + _edgeDataSize + 1);
             for (var i = 0; i < _edgeDataSize; i++)
             {
                 _edgeData[edgePointer + i] = metaData[i];

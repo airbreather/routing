@@ -83,6 +83,10 @@ namespace Itinero.Build
                 long oldByteCount = this.length * SizeOf<T>();
                 GC.RemoveMemoryPressure(oldByteCount);
                 this.headPtr = (byte*)Marshal.ReAllocHGlobal(new IntPtr(this.headPtr), new IntPtr(byteCount)).ToPointer();
+                if (oldByteCount < byteCount)
+                {
+                    InitBlockUnaligned(this.headPtr + oldByteCount, 0, unchecked((uint)(byteCount - oldByteCount)));
+                }
             }
 
             this.length = size;

@@ -68,7 +68,7 @@ namespace Itinero.IO.Osm.Streams
             int int1, int2;
             long2doubleInt(id, out int1, out int2);
 
-            this.EnsureIndexSize(_idx + 2);
+            _index.EnsureMinimumSize(_idx + 2);
             _index[_idx + 0] = int1;
             _index[_idx + 1] = int2;
             _idx += 2;
@@ -155,7 +155,7 @@ namespace Itinero.IO.Osm.Streams
         {
             var idx = TryGetIndex(id);
 
-            this.EnsureDataSize((idx * 2) + 2);
+            _data.EnsureMinimumSize((idx * 2) + 2, int.MaxValue);
             _data[(idx * 2) + 0] = unchecked((int)vertex);
             _data[(idx * 2) + 1] = int.MinValue;
         }
@@ -168,7 +168,7 @@ namespace Itinero.IO.Osm.Streams
             int lat = (int)(latitude * 10000000);
             int lon = (int)(longitude * 10000000);
 
-            this.EnsureDataSize((idx * 2) + 2);
+            _data.EnsureMinimumSize((idx * 2) + 2, int.MaxValue);
             _data[(idx * 2) + 0] = lat;
             _data[(idx * 2) + 1] = lon;
         }
@@ -460,56 +460,6 @@ namespace Itinero.IO.Osm.Streams
             latitude = (float)(lat / 10000000.0);
             longitude = (float)(lon / 10000000.0);
             return true;
-        }
-
-        private void EnsureIndexSize(long minimumSize)
-        {
-            if (_index.Length < minimumSize)
-            {
-                this.IncreaseIndexSize(minimumSize);
-            }
-        }
-
-        private void IncreaseIndexSize(long minimumSize)
-        {
-            long oldSize = _index.Length;
-
-            // fast-forward, perhaps, through the first several resizes.
-            // Math.Max also ensures that we can resize from 0.
-            long size = Math.Max(1024 * 1024, oldSize * 2);
-            while (size < minimumSize)
-            {
-                size *= 2;
-            }
-
-            _index.Resize(size);
-        }
-
-        private void EnsureDataSize(long minimumSize)
-        {
-            if (_data.Length < minimumSize)
-            {
-                this.IncreaseDataSize(minimumSize);
-            }
-        }
-
-        private void IncreaseDataSize(long minimumSize)
-        {
-            long oldSize = _data.Length;
-
-            // fast-forward, perhaps, through the first several resizes.
-            // Math.Max also ensures that we can resize from 0.
-            long size = Math.Max(1024, oldSize * 2);
-            while (size < minimumSize)
-            {
-                size *= 2;
-            }
-
-            _data.Resize(size);
-            for (long i = oldSize; i < size; i++)
-            {
-                _data[i] = int.MaxValue;
-            }
         }
 
         /// <summary>
