@@ -22,16 +22,17 @@ namespace Itinero.Build
         public UnmanagedMemoryArray(long size)
         {
             // TODO: support compatible complex types
-            if (!(typeof(T) == typeof(byte) ||
-                  typeof(T) == typeof(sbyte) ||
-                  typeof(T) == typeof(short) ||
-                  typeof(T) == typeof(ushort) ||
-                  typeof(T) == typeof(int) ||
-                  typeof(T) == typeof(uint) ||
-                  typeof(T) == typeof(long) ||
-                  typeof(T) == typeof(ulong) ||
-                  typeof(T) == typeof(float) ||
-                  typeof(T) == typeof(double)))
+            if (!(BitConverter.IsLittleEndian &&
+                  (typeof(T) == typeof(byte) ||
+                   typeof(T) == typeof(sbyte) ||
+                   typeof(T) == typeof(short) ||
+                   typeof(T) == typeof(ushort) ||
+                   typeof(T) == typeof(int) ||
+                   typeof(T) == typeof(uint) ||
+                   typeof(T) == typeof(long) ||
+                   typeof(T) == typeof(ulong) ||
+                   typeof(T) == typeof(float) ||
+                   typeof(T) == typeof(double))))
             {
                 throw new NotSupportedException(typeof(T).Name);
             }
